@@ -5,6 +5,7 @@ import {
   StyleSheet
 } from 'react-native';
 import {Agenda} from 'react-native-calendars';
+import InputBox from '../InputBox/InputBox';
 
 export default class AgendaScreen extends Component {
   constructor(props) {
@@ -16,13 +17,17 @@ export default class AgendaScreen extends Component {
 
   render() {
     return (
+      <View>
       <Agenda
         items={this.state.items}
         loadItemsForMonth={this.loadItems.bind(this)}
-        selected={'2017-05-16'}
+        selected={'2019-02-28'}
         renderItem={this.renderItem.bind(this)}
         renderEmptyDate={this.renderEmptyDate.bind(this)}
         rowHasChanged={this.rowHasChanged.bind(this)}
+        onDayPress={(day)=>{
+          console.log('onDayPress called');
+        }}
         // markingType={'period'}
         // markedDates={{
         //    '2017-05-08': {textColor: '#666'},
@@ -35,8 +40,9 @@ export default class AgendaScreen extends Component {
         //    '2017-05-26': {endingDay: true, color: 'gray'}}}
          // monthFormat={'yyyy'}
          // theme={{calendarBackground: 'red', agendaKnobColor: 'green'}}
-        //renderDay={(day, item) => (<Text>{day ? day.day: 'item'}</Text>)}
+        // renderDay={(day, item) => (<Text>{day ? day.day: 'item'}</Text>)}
       />
+      </View>
     );
   }
 
@@ -44,7 +50,9 @@ export default class AgendaScreen extends Component {
     setTimeout(() => {
       for (let i = -15; i < 85; i++) {
         const time = day.timestamp + i * 24 * 60 * 60 * 1000;
+        // console.log('time is',time);
         const strTime = this.timeToString(time);
+        // console.log('strTime is',strTime);
         if (!this.state.items[strTime]) {
           this.state.items[strTime] = [];
           const numItems = Math.floor(Math.random() * 5);
@@ -56,14 +64,14 @@ export default class AgendaScreen extends Component {
           }
         }
       }
-      //console.log(this.state.items);
+      console.log('state.items',this.state.items);
       const newItems = {};
       Object.keys(this.state.items).forEach(key => {newItems[key] = this.state.items[key];});
       this.setState({
         items: newItems
       });
     }, 1000);
-    // console.log(`Load Items for ${day.year}-${day.month}`);
+    console.log(`Load Items for ${day.year}-${day.month}`);
   }
 
   renderItem(item) {
