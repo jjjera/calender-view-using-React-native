@@ -2,22 +2,62 @@ import React, { Component } from 'react';
 import {
   Text,
   View,
-  StyleSheet
+  StyleSheet,
+  TouchableOpacity
 } from 'react-native';
 import {Agenda} from 'react-native-calendars';
 import InputBox from '../InputBox/InputBox';
+import DialogInput from 'react-native-dialog-input';
 
 export default class AgendaScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      items: {}
+      items: {},
+      isDialogVisible: false
     };
   }
 
+  showDialog(isShow,day){
+    console.log('showDialog called',day);
+    this.setState({isDialogVisible: isShow,day:day});
+  }
+
+  closeDialogBox(){
+    console.log('closeDialogBox called');
+    this.setState({isDialogVisible: false});
+  }
+
+  sendInput(inputText){
+    console.log("sendInput (DialogInput#1): " + inputText);
+    console.log('day is',this.state.day);
+    this.loadItems(inputText);
+      }
+
+      timeToString(time) {
+        const date = new Date(time);
+        return date.toISOString().split('T')[0];
+      }
+
+      renderItem(item) {
+        return (
+          <View style={[styles.item, {height: item.height}]}><Text>{item.name}</Text></View>
+        );
+      }
+
+      renderEmptyDate() {
+        return (
+          <View style={styles.emptyDate}><Text>This is empty date!</Text></View>
+        );
+      }
+
+      rowHasChanged(r1, r2) {
+        return r1.name !== r2.name;
+      }
+
   render() {
     return (
-      <View>
+      <View style={{flex:1}}>
       <Agenda
         items={this.state.items}
         loadItemsForMonth={this.loadItems.bind(this)}
@@ -26,74 +66,63 @@ export default class AgendaScreen extends Component {
         renderEmptyDate={this.renderEmptyDate.bind(this)}
         rowHasChanged={this.rowHasChanged.bind(this)}
         onDayPress={(day)=>{
-          console.log('onDayPress called');
+          console.log('onDayPress called',day);
+          this.showDialog(true,day);
         }}
-        // markingType={'period'}
-        // markedDates={{
-        //    '2017-05-08': {textColor: '#666'},
-        //    '2017-05-09': {textColor: '#666'},
-        //    '2017-05-14': {startingDay: true, endingDay: true, color: 'blue'},
-        //    '2017-05-21': {startingDay: true, color: 'blue'},
-        //    '2017-05-22': {endingDay: true, color: 'gray'},
-        //    '2017-05-24': {startingDay: true, color: 'gray'},
-        //    '2017-05-25': {color: 'gray'},
-        //    '2017-05-26': {endingDay: true, color: 'gray'}}}
-         // monthFormat={'yyyy'}
-         // theme={{calendarBackground: 'red', agendaKnobColor: 'green'}}
-        // renderDay={(day, item) => (<Text>{day ? day.day: 'item'}</Text>)}
       />
+        <DialogInput isDialogVisible={this.state.isDialogVisible}
+          title={"DialogInput 1"}
+          message={"Message for DialogInput #1"}
+          hintInput ={"HINT INPUT"}
+          submitInput={ (inputText) => {this.sendInput(inputText)} }
+          closeDialog={ () => {this.closeDialogBox(false)}}>
+        </DialogInput>
+        <TouchableOpacity onPress={()=>{this.showDialog(true)}} style={{padding:10}}>
+          <Text>Show DialogInput #1</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 
-  loadItems(day) {
+  loadItems(inputText) {
     setTimeout(() => {
-      for (let i = -15; i < 85; i++) {
-        const time = day.timestamp + i * 24 * 60 * 60 * 1000;
-        // console.log('time is',time);
-        const strTime = this.timeToString(time);
-        // console.log('strTime is',strTime);
-        if (!this.state.items[strTime]) {
-          this.state.items[strTime] = [];
-          const numItems = Math.floor(Math.random() * 5);
-          for (let j = 0; j < numItems; j++) {
-            this.state.items[strTime].push({
-              name: 'Item for ' + strTime,
-              height: Math.max(50, Math.floor(Math.random() * 150))
-            });
-          }
-        }
-      }
-      console.log('state.items',this.state.items);
-      const newItems = {};
-      Object.keys(this.state.items).forEach(key => {newItems[key] = this.state.items[key];});
-      this.setState({
-        items: newItems
-      });
-    }, 1000);
-    console.log(`Load Items for ${day.year}-${day.month}`);
+      const time = this.state.day.timestamp + 60 * 24 * 60 * 60 * 1000;
+      const strTime = this.timeToString(time);
+        this.state.items[strTime] = [];
+          this.state.items[strTime].push({
+            name: 'Item for ' + inputText,
+            height: Math.max(50, Math.floor(Math.random() * 150))
+          });
+          console.log('state.items',this.state.items);
+          const newItems = {};
+          Object.keys(this.state.items).forEach(key => {newItems[key] = this.state.items[key];});
+          this.setState({
+            items: newItems
+          });
+    },1000);
+    this.closeDialogBox();
   }
 
-  renderItem(item) {
-    return (
-      <View style={[styles.item, {height: item.height}]}><Text>{item.name}</Text></View>
-    );
-  }
+  // renderItem(item) {
+  //   return (
+  //     <View style={[styles.item, {height: item.height}]}><Text>{item.name}</Text></View>
+  //   );
+  // }
 
-  renderEmptyDate() {
-    return (
-      <View style={styles.emptyDate}><Text>This is empty date!</Text></View>
-    );
-  }
-
-  rowHasChanged(r1, r2) {
-    return r1.name !== r2.name;
-  }
-
-  timeToString(time) {
-    const date = new Date(time);
-    return date.toISOString().split('T')[0];
-  }
+  // renderEmptyDate() {
+  //   return (
+  //     <View style={styles.emptyDate}><Text>This is empty date!</Text></View>
+  //   );
+  // }
+  //
+  // rowHasChanged(r1, r2) {
+  //   return r1.name !== r2.name;
+  // }
+  //
+  // timeToString(time) {
+  //   const date = new Date(time);
+  //   return date.toISOString().split('T')[0];
+  // }
 }
 
 const styles = StyleSheet.create({
