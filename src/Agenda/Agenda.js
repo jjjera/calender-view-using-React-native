@@ -9,17 +9,18 @@ import {Agenda} from 'react-native-calendars';
 import InputBox from '../InputBox/InputBox';
 import DialogInput from 'react-native-dialog-input';
 
-export default class AgendaScreen extends Component {
+class AgendaScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       items: {},
-      isDialogVisible: false
+      isDialogVisible: false,
+      day: {timestamp : new Date()}
     };
   }
 
   showDialog(isShow,day){
-    console.log('showDialog called',day);
+    console.log('showDialog called');
     this.setState({isDialogVisible: isShow,day:day});
   }
 
@@ -29,33 +30,13 @@ export default class AgendaScreen extends Component {
   }
 
   sendInput(inputText){
-    console.log("sendInput (DialogInput#1): " + inputText);
-    console.log('day is',this.state.day);
+    // console.log("sendInput (DialogInput#1): " + inputText);
+    // console.log('day is',this.state.day);
     this.loadItems(inputText);
       }
 
-      timeToString(time) {
-        const date = new Date(time);
-        return date.toISOString().split('T')[0];
-      }
-
-      renderItem(item) {
-        return (
-          <View style={[styles.item, {height: item.height}]}><Text>{item.name}</Text></View>
-        );
-      }
-
-      renderEmptyDate() {
-        return (
-          <View style={styles.emptyDate}><Text>This is empty date!</Text></View>
-        );
-      }
-
-      rowHasChanged(r1, r2) {
-        return r1.name !== r2.name;
-      }
-
   render() {
+    console.log('state is',this.state.day);
     return (
       <View style={{flex:1}}>
       <Agenda
@@ -85,12 +66,18 @@ export default class AgendaScreen extends Component {
   }
 
   loadItems(inputText) {
+    console.log('loadItems called',inputText);
     setTimeout(() => {
-      const time = this.state.day.timestamp + 60 * 24 * 60 * 60 * 1000;
+      console.log('setTimeout called');
+      let timestamp = this.state.day.timestamp;
+      const time = timestamp + 60 * 24 * 60 * 60 * 1000;
+      console.log('time is',time);
       const strTime = this.timeToString(time);
+      console.log('strTime called',strTime);
         this.state.items[strTime] = [];
+        console.log('state items',this.state.items[strTime]);
           this.state.items[strTime].push({
-            name: 'Item for ' + inputText,
+            name: 'Event is: ' + inputText,
             height: Math.max(50, Math.floor(Math.random() * 150))
           });
           console.log('state.items',this.state.items);
@@ -99,30 +86,32 @@ export default class AgendaScreen extends Component {
           this.setState({
             items: newItems
           });
+          console.log('new items',newItems);
     },1000);
     this.closeDialogBox();
   }
 
-  // renderItem(item) {
-  //   return (
-  //     <View style={[styles.item, {height: item.height}]}><Text>{item.name}</Text></View>
-  //   );
-  // }
+  timeToString(time) {
+    const date = new Date(time);
+    return date.toISOString().split('T')[0];
+  }
 
-  // renderEmptyDate() {
-  //   return (
-  //     <View style={styles.emptyDate}><Text>This is empty date!</Text></View>
-  //   );
-  // }
-  //
-  // rowHasChanged(r1, r2) {
-  //   return r1.name !== r2.name;
-  // }
-  //
-  // timeToString(time) {
-  //   const date = new Date(time);
-  //   return date.toISOString().split('T')[0];
-  // }
+  renderItem(item) {
+    return (
+      <View style={[styles.item, {height: item.height}]}><Text>{item.name}</Text></View>
+    );
+  }
+
+  renderEmptyDate() {
+    return (
+      <View style={styles.emptyDate}><Text>This is empty date!</Text></View>
+    );
+  }
+
+  rowHasChanged(r1, r2) {
+    return r1.name !== r2.name;
+  }
+
 }
 
 const styles = StyleSheet.create({
@@ -140,3 +129,5 @@ const styles = StyleSheet.create({
     paddingTop: 30
   }
 });
+
+export default AgendaScreen;
