@@ -14,7 +14,8 @@ class AgendaScreen extends Component {
     this.state = {
       items: {},
       isDialogVisible: false,
-      day: {timestamp : new Date()}
+      day: {timestamp : new Date()},
+      selectedDate: {}
       };
     }
 
@@ -44,6 +45,8 @@ class AgendaScreen extends Component {
         // console.log('time is',time);
         const strTime = this.timeToString(time);
         // console.log('strTime called',strTime);
+        this.setState({selectedDate:strTime});
+        console.log('selectedDate is',this.state.selectedDate);
           this.state.items[strTime] = [];
           // console.log('state items',this.state.items[strTime]);
             this.state.items[strTime].push({
@@ -57,7 +60,8 @@ class AgendaScreen extends Component {
               this.setState({
                 items: newItems
               });
-            // console.log('new items',newItems);
+              // this.setState({selectedDate: this.state.items[key]});
+              // console.log('selectedDate',this.state.selectedDate);
               this.closeDialogBox();
             }
 
@@ -82,18 +86,25 @@ class AgendaScreen extends Component {
         }
 
   render() {
-    // console.log('state is',this.state.day);
+    // Object.keys(this.state.items).map((key) => {
+    //   return this.state.items[key];
+    // });
+    // console.log('state is',this.state.items[key]);
+    const vla = this.state.items[this.state.selectedDate];
+    let det = {};
+    console.log('vla',vla);
+    det[this.state.selectedDate] = vla;
+    console.log('det is', det);
+    console.log('state ites are',this.state.items);
     return (
       <View style={{flex:1}}>
       <Agenda
-        items={this.state.items}
+        items={det}
         renderItem={this.renderItem.bind(this)}
         rowHasChanged={this.rowHasChanged.bind(this)}
         onDayPress={(day)=>{
         this.showDialog(true,day);
         }}
-
-  onCalendarToggled={(calendarOpened) => {console.log(calendarOpened)}}
       />
         <DialogInput isDialogVisible={this.state.isDialogVisible}
           title={"DialogInput 1"}
