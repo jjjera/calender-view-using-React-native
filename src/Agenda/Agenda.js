@@ -14,8 +14,7 @@ class AgendaScreen extends Component {
     this.state = {
       items: {},
       isDialogVisible: false,
-      day: {timestamp : new Date()},
-      selectedDate: {}
+      day: {timestamp : new Date()}
       };
     }
 
@@ -45,34 +44,31 @@ class AgendaScreen extends Component {
         // console.log('time is',time);
         const strTime = this.timeToString(time);
         // console.log('strTime called',strTime);
-        this.setState({selectedDate:strTime});
-        console.log('selectedDate is',this.state.selectedDate);
           this.state.items[strTime] = [];
           // console.log('state items',this.state.items[strTime]);
             this.state.items[strTime].push({
               name: inputText,
               height: Math.max(50, Math.floor(Math.random() * 150))
             });
-            console.log('state.items',this.state.items[strTime]);
+            // console.log('state.items',this.state.items[strTime]);
             const newItems = {};
             Object.keys(this.state.items)
               .forEach(key => {newItems[key] = this.state.items[key];});
               this.setState({
                 items: newItems
               });
-              // this.setState({selectedDate: this.state.items[key]});
-              // console.log('selectedDate',this.state.selectedDate);
+            // console.log('new items',newItems);
               this.closeDialogBox();
             }
 
             timeToString(time) {
-              console.log('timeToString called',time);
+              // console.log('timeToString called',time);
               const date = new Date(time);
               return date.toISOString().split('T')[0];
           }
 
           renderItem(item) {
-            console.log('renderItem called',item);
+            // console.log('renderItem called',item);
             return (
               <View style={[styles.item, {height: item.height}]}>
                 <Text>{item.name}</Text>
@@ -81,25 +77,19 @@ class AgendaScreen extends Component {
           }
 
         rowHasChanged(r1, r2) {
-          console.log('rowHasChanged called');
+          // console.log('rowHasChanged called');
           return r1.name !== r2.name;
         }
 
   render() {
-    // Object.keys(this.state.items).map((key) => {
-    //   return this.state.items[key];
-    // });
-    // console.log('state is',this.state.items[key]);
-    const vla = this.state.items[this.state.selectedDate];
-    let det = {};
-    console.log('vla',vla);
-    det[this.state.selectedDate] = vla;
-    console.log('det is', det);
-    console.log('state ites are',this.state.items);
+    // console.log('state is',this.state.day);
     return (
       <View style={{flex:1}}>
       <Agenda
-        items={det}
+        // items={Object.keys(this.state.items).map((key) => {
+        //   console.log('key is',key);
+        // })}
+        items={this.state.items}
         renderItem={this.renderItem.bind(this)}
         rowHasChanged={this.rowHasChanged.bind(this)}
         onDayPress={(day)=>{
